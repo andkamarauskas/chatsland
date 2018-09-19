@@ -1,0 +1,388 @@
+swagger: '2.0'
+info:
+  version: '0.0.1'
+  title: Backend API service
+# during dev, should point to your local machine
+host: localhost:3000
+# basePath prefixes all resource paths
+basePath: /
+#
+tags:
+  - name: '/user'
+    description: 'User Registration and Authentification calls'
+  - name: '/orderBook'
+    description: 'Order book calls'
+  - name: '/withdrawal'
+    description: 'Calls to withdrawal service'
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /chat:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: Chat
+    get:
+      tags:
+        - 'Chat'
+      summary: Get all chats
+      operationId: getAllChats
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Chats'
+    post:
+      tags:
+        - 'Chat'
+      summary: Add new chat
+      # used as the method name of the controller
+      operationId: addNewChat
+      parameters:
+        - in: 'body'
+          name: 'body'
+          required: true
+          schema:
+            $ref: '#/definitions/NewChat'
+      responses:
+        '200':
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: '#/definitions/Chat'
+        # responses may fall through to errors
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  NewChat:
+    properties:
+      name:
+        type: string
+        example: slack
+  Chat:
+    properties:
+      id:
+        type: string
+        example: adcfsf125
+      name:
+        type: string
+        example: slack
+  Chats:
+    type: array
+    items:
+      $ref: '#/definitions/Chat'
+  LoginReq:
+    required:
+      - username
+      - password
+    properties:
+      username:
+        type: string
+        example: 'someuser@gmail.com'
+      password:
+        type: string
+        description: 'Password must be hashed'
+        example: 'qwWEFSGS55222WCCS55sda2s5d'
+      twoFaToken:
+        type: string
+        example: '123465'
+  TokenRes:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+        example: 'User authentication succeed'
+      session_token:
+        type: string
+        example: '62d7c3d0-a815-49f5-9e08-f176a953799a'
+  TwoFaReq:
+    properties:
+      user_id:
+        type: integer
+        example: 1
+      two_FA_type:
+        type: string
+        example: GA
+  TwoFaRes:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+        example: 'Generated QR code and secret'
+      key:
+        type: object
+        properties:
+          qrcode:
+            type: string
+            description: 'To use it put qrcode string to img source: <img src=qrcode >'
+            example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkCAYAAAAZtYVBAAAAAklEQVR4AewaftIAAAYLSURBVO3BQQ4cuZbAQFKo+.....'
+          text:
+            type: string
+            example: 'ANSUhEUgAAAKQAAACkCAYAAA'
+  ValidateReq:
+    properties:
+      user_id:
+        type: integer
+        example: 17
+      two_FA_type:
+        type: string
+        example: GA
+      two_FA_token:
+        type: string
+        example: '123456'
+  UserSave:
+    type: 'object'
+    required:
+      - 'email'
+      - 'language'
+      - 'opened_by'
+      - 'password'
+    properties:
+      email:
+        type: 'string'
+        example: 'username@gmail.com'
+      password:
+        type: 'string'
+      opened_by:
+        type: 'string'
+        example: 'Mistertango'
+      language:
+        type: 'string'
+        example: 'spanish'
+    example:
+      password: 'password'
+      opened_by: 'Mistertango'
+      language: 'spanish'
+      email: 'username@gmail.com'
+  UserResponse:
+    type: 'object'
+    properties:
+      message:
+        type: 'string'
+        example: 'success'
+      id:
+        type: 'integer'
+        example: 2536
+      uniqueReference:
+        type: 'string'
+        example: 'BITLOCUS 1223 LKJH'
+        description: 'Generated unique reference'
+    example:
+      id: 2536
+      message: 'success'
+      uniqueReference: 'BITLOCUS 1223 LKJH'
+  BalancesRes:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+        example: 'Success message'
+      balances:
+        type: array
+        items:
+          type: object
+          properties:
+            asset:
+              type: string
+              example: 'EUR'
+            balance:
+              type: string
+              example: '12.99'
+            reserved_sum:
+              type: string
+              example: '1.05'
+
+  Account:
+    description: A single account
+    type: object
+    required:
+      - asset
+    example:
+      id: 1
+      userId: 2
+      asset: EUR
+      createdAt: '2018-01-01T12:00:00.001Z'
+      updatedAt: '2018-01-01T12:00:00.001Z'
+    properties:
+      id:
+        type: integer
+        readOnly: true
+        description: The unique ID of the account
+      userId:
+        type: integer
+        readOnly: true
+        description: The ID of the user this account belongs to
+      balance:
+        type: integer
+        readOnly: true
+        description: The balance of the account
+      asset:
+        type: string
+        description: The asset of the account
+      createdAt:
+        type: string
+        format: dateTime
+        readOnly: true
+        description: The time this account was created at
+      updatedAt:
+        type: string
+        format: dateTime
+        readOnly: true
+        description: The time this account was last updated at
+  Accounts:
+    description: Multiple accounts
+    type: array
+    items:
+      $ref: '#/definitions/Account'
+
+  reservationBlockSumRes:
+    description: Sum of account reservation balance
+    type: object
+    properties:
+      sum:
+        type: integer
+
+  MarketsRes:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+        example: 'Success message'
+      markets:
+        type: object
+  OrderRes:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+        example: 'Success message'
+      data:
+        type: object
+        properties:
+          count:
+            type: integer
+            example: 15
+          orders:
+            type: array
+            items:
+              type: object
+  MethodsRes:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+        example: 'Success message'
+      data:
+        type: array
+        items:
+          type: object
+  MethodsDetails:
+    properties:
+      succes:
+        type: boolean
+        example: true
+      message:
+        type: string
+      data:
+        type: array
+        items:
+          type: object
+  AddressesRes:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+      data:
+        type: array
+        items:
+          type: object
+  HistoryRes:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+        example: 'Withdrawals history'
+      data:
+        type: array
+        items:
+          type: object
+  Trade:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      ticker:
+        type: string
+      buyer:
+        type: integer
+      seller:
+        type: integer
+      quantity:
+        type: integer
+      price:
+        type: integer
+      createdAt:
+        type: string
+        format: date-time
+        readOnly: true
+      updatedAt:
+        type: string
+        format: date-time
+        readOnly: true
+
+  TransHistoryRes:
+    type: object
+    properties:
+      count:
+        type: integer
+      rows:
+        type: array
+        items:
+          type: object
+  Trades:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+        example: 'Success message'
+      trades:
+        type: array
+        items:
+          $ref: '#/definitions/Trade'
+  DefRes:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+        example: 'Success message'
+  ErrorResponse:
+    properties:
+      success:
+        type: boolean
+        example: false
+      message:
+        type: string
+        example: Error explanation
