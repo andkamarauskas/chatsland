@@ -4,7 +4,7 @@
   "description": "App helps to collect and share various chats channels",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll --verbose"
   },
   "author": "Andrius Kamarauskas",
   "license": "ISC",
@@ -15,5 +15,9 @@
     "mongoose": "^5.2.15",
     "morgan": "^1.9.1",
     "swagger-express-mw": "^0.1.0"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0",
+    "supertest": "^3.3.0"
   }
 }

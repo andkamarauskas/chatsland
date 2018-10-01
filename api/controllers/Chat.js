@@ -21,7 +21,6 @@ const addNewChat = (req, res) => {
 	newChat.save(err => {
 		if (err)
 			return res.status(400).send({
-				message: 'Error adding new chat',
 				error: err.code === 11000 ? 'chat already exist' : err.message,
 			});
 
@@ -32,7 +31,39 @@ const addNewChat = (req, res) => {
 	});
 };
 
+const getOneChat = (req, res) => {
+	Chat.findById(req.swagger.params.id.value, (err, chat) => {
+		if (err) return res.status(400).send({ message: 'Chat not found' });
+		return res.send(chat);
+	});
+};
+
+const updateChat = (req, res) => {
+	Chat.findByIdAndUpdate(
+		req.swagger.params.id.value,
+		{ $set: req.body },
+		(err, chat) => {
+			if (err)
+				return res.status(400).send({
+					error:
+						err.code === 11000 ? 'chat already exist' : err.message,
+				});
+			return res.send({ message: 'Updated' });
+		},
+	);
+};
+
+const deleteChat = (req, res) => {
+	Chat.findByIdAndRemove(req.swagger.params.id.value, error => {
+		if (error) return res.status(400).send(error);
+		return res.send('Deleted');
+	});
+};
+
 module.exports = {
 	getAllChats,
 	addNewChat,
+	getOneChat,
+	updateChat,
+	deleteChat,
 };
