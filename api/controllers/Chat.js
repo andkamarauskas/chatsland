@@ -3,15 +3,17 @@
 const Chat = require('../models/Chat');
 
 const getAllChats = (req, res) => {
-	Chat.find({}, 'id name', (error, chats) => {
-		if (error)
-			return res.status(400).send({
-				message: 'Error getting chats',
-				error: error.message,
-			});
+	Chat.find({}, 'id name channels')
+		.populate({ path: 'cahnnels', select: 'name' })
+		.exec((error, chats) => {
+			if (error)
+				return res.status(400).send({
+					message: 'Error getting chats',
+					error: error.message,
+				});
 
-		return res.status(200).send(chats);
-	});
+			return res.status(200).send(chats);
+		});
 };
 
 const addNewChat = (req, res) => {

@@ -115,10 +115,104 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
+  /channels:
+    x-swagger-router-controller: Channel
+    get:
+      tags:
+        - 'Channel'
+      summary: Get all channels
+      operationId: getAllChannels
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Channels'
+  /channel:
+    x-swagger-router-controller: Channel
+    post:
+      tags:
+        - 'Channel'
+      summary: Add new chat
+      operationId: addNewChannel
+      parameters:
+        - in: 'body'
+          name: 'body'
+          required: true
+          schema:
+            $ref: '#/definitions/NewChannel'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Channel'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /channel/{id}:
+    x-swagger-router-controller: Channel
+    delete:
+      tags:
+        - 'Channel'
+      summary: Delete one channel
+      operationId: deleteChannel
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Message'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
+  NewChannel:
+    required:
+      - chat_id
+      - name
+      - tags
+    properties:
+      chat_id:
+        type: string
+        example: '12sa22as5'
+      name:
+        type: string
+        example: Cafe racers channel
+      description:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+  Channel:
+    properties:
+      id:
+        type: string
+        example: 'asss321'
+      chat_id:
+        type: string
+        example: '12sa22as5'
+      name:
+        type: string
+        example: Cafe racers channel
+      description:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+  Channels:
+    type: array
+    items:
+      $ref: '#/definitions/Channel'
   NewChat:
     properties:
       name:
