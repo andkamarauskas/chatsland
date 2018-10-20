@@ -29,7 +29,7 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
 	app.use(swaggerExpress.runner.swaggerTools.swaggerUi());
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3333;
 const server = app.listen(port);
 console.log('Works on port: ', port);
 

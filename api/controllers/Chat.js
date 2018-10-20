@@ -3,7 +3,7 @@
 const Chat = require('../models/Chat');
 
 const getAllChats = (req, res) => {
-	Chat.find({}, 'id name channels')
+	Chat.find({}, 'id name channels icon_url')
 		.populate({ path: 'cahnnels', select: 'name' })
 		.exec((error, chats) => {
 			if (error)
@@ -17,9 +17,8 @@ const getAllChats = (req, res) => {
 };
 
 const addNewChat = (req, res) => {
-	const newChat = new Chat({
-		name: req.body.name,
-	});
+	const data = req.body;
+	const newChat = new Chat(data);
 	newChat.save(err => {
 		if (err)
 			return res.status(400).send({

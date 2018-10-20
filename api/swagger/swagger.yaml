@@ -3,7 +3,7 @@ info:
   version: '0.0.1'
   title: Chatsland Api
 # during dev, should point to your local machine
-host: localhost:3000
+host: localhost:3333
 # basePath prefixes all resource paths
 basePath: /
 schemes:
@@ -218,6 +218,9 @@ definitions:
       name:
         type: string
         example: slack
+      icon_url:
+        type: string
+        example: './img/slack.png'
   Chat:
     properties:
       id:
@@ -226,6 +229,9 @@ definitions:
       name:
         type: string
         example: slack
+      icon_url:
+        type: string
+        example: './img/slack.png'
   Chats:
     type: array
     items:

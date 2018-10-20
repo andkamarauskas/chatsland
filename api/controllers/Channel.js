@@ -1,5 +1,6 @@
 'use strict';
 
+const Chat = require('../models/Chat');
 const Channel = require('../models/Channel');
 
 const addNewChannel = (req, res) => {
@@ -16,17 +17,13 @@ const addNewChannel = (req, res) => {
 				error:
 					err.code === 11000 ? 'Channel already exist' : err.message,
 			});
-
-		return res.status(200).send({
-			message: 'New Channel added',
-			channel_id: newChannel._id,
-		});
+		return res.status(200).send(newChannel);
 	});
 };
 
 const getAllChannels = (req, res) => {
 	Channel.find({}, 'name description tags')
-		.populate({ path: 'chat', select: 'name' })
+		.populate({ path: 'chat', select: 'name icon_url' })
 		.exec((error, channels) => {
 			if (error)
 				return res.status(400).send({
